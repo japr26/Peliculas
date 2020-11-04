@@ -1,0 +1,133 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model Peliculas.Models.Peliculas
+
+@{
+    IPagedList<Peliculas.Models.Peliculas> peliculas = ViewBag.paged;
+    List<Peliculas.Models.Categoria> categorias = ViewBag.Categorias;
+}
+
+    <div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-label="Pelicula" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 class="modal-title" id="modalTittle">Agregar Pelicula</h4>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm("Guardar", "Peliculas", FormMethod.Post, new { id = "frm-articulo", enctype = "multipart/form-data" }))
+                    {
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Información de articulo</div>
+                            <div class="panel-body">
+                                <div class="custom-file">
+                                    @Html.Label("Imagen")
+                                    @Html.TextBoxFor(x => x.rutaImagen, new { @class = "form-control", @id = "rutaImagen", @name = "rutaImagen", @type = "file" })
+                                    @Html.ValidationMessageFor(x => x.rutaImagen, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Titulo")
+                                    @Html.TextBoxFor(x => x.titulo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.titulo, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Categoria")
+                                    @Html.DropDownListFor(x => x.idCategoria, new SelectList(categorias, "id", "descripcion"), new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Año")
+                                    @Html.TextBoxFor(x => x.ano, new { @class = "form-control", @type = "number", @min = "1900", @max= "3000" })
+                                    @Html.ValidationMessageFor(x => x.ano, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-right">
+        <div class="col-md-12">
+            <a id="agregarPelicula" data-toggle="modal" href="#modal" class="btn btn-primary btn-lg">Agregar</a>
+        </div>
+    </div>
+
+    <div>
+        <input type="text" id="buscar" placeholder="Buscar" class="form-control" />
+        <table class="table" id="peliculas">
+
+            <thead>
+                <tr>
+                    <th style="width:200px">Caratula</th>
+                    <th style="width:200px">Titulo</th>
+                    <th style="width:200px">Categoria</th>
+                    <th style="width:200px">Año</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in peliculas)
+                {
+                <tr>
+                    <td><img src="~/imagenes/@(m.rutaImagen)" width="80" height="100"></td>
+                    <td>@(m.titulo)</td>
+                    <td>@(m.Categoria.descripcion)</td>
+                    <td>@(m.ano)</td>
+                    <td>
+                        @*<a id="Editar" data-toggle="modal" class="btn btn-primary btn-lg" onclick="Editar('@(m.idPelicula)')">Editar</a>*@
+                        @Html.ActionLink("Editar", "Editar", new { idPelicula = m.idPelicula }, new { @class = "btn btn-primary btn-xs" })
+                        @Html.ActionLink("Eliminar", "Eliminar", new { idPelicula = m.idPelicula }, new { @class = "btn btn-xs btn-danger" })
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+        </table>
+        <center>@Html.PagedListPager(peliculas, page => Url.Action("Index", new { page }))</center>
+    </div>
+
+<script>
+
+    document.querySelector("#buscar").onkeyup = function () {
+        $TableFilter("#peliculas", this.value);
+    }
+
+    $TableFilter = function (id, value) {
+        var rows = document.querySelectorAll(id + ' tbody tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var showRow = false;
+
+            var row = rows[i];
+            row.style.display = 'none';
+
+            for (var x = 0; x < row.childElementCount; x++) {
+                if (row.children[x].textContent.toLowerCase().indexOf(value.toLowerCase().trim()) > -1) {
+                    showRow = true;
+                    break;
+                }
+            }
+
+            if (showRow) {
+                row.style.display = null;
+            }
+        }
+    }
+
+    //function Editar(pelicula) {
+
+    //    if (pelicula) {
+    //        $.ajax({
+    //            method: "GET",
+    //            url: "/Peliculas/Editar2",
+    //            data: { idPelicula: pelicula },
+    //            success: function (response) { alert("hola"); },
+    //            error: function (result) { alert(result.status + ' ' + result.statusText); }
+    //        });
+    //        }
+    //    }
+</script>

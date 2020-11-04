@@ -1,0 +1,40 @@
+﻿@model Peliculas.Models.Peliculas
+
+@{
+    List<Peliculas.Models.Categoria> categorias = ViewBag.Categorias;
+}
+
+<div style="display:flex; justify-content:center;">
+    @using (Html.BeginForm("Guardar", "Peliculas", FormMethod.Post, new { id = "frm-articulo", enctype = "multipart/form-data" }))
+    {
+        @Html.HiddenFor(x => x.idPelicula)
+        <div class="panel panel-default">
+            <div class="panel-heading">Información de articulo</div>
+            <div class="panel-body">
+                <div class="custom-file">
+                    @Html.Label("Imagen")
+                    @Html.TextBoxFor(x => x.rutaImagen, new { @class = "form-control", @id = "rutaImagen", @name = "rutaImagen", @type = "file" })
+                    @Html.ValidationMessageFor(x => x.rutaImagen, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.Label("Titulo")
+                    @Html.TextBoxFor(x => x.titulo, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.titulo, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.Label("Categoria")
+                    @Html.DropDownListFor(x => x.idCategoria, new SelectList(categorias, "id", "descripcion"), new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    @Html.Label("Año")
+                    @Html.TextBoxFor(x => x.ano, new { @class = "form-control", @type = "number", @min = "1900", @max = "3000" })
+                    @Html.ValidationMessageFor(x => x.ano, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    }
+</div>
