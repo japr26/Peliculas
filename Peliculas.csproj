@@ -149,6 +149,7 @@
     <Compile Include="Models\Categoria.cs" />
     <Compile Include="Models\Peliculas.cs" />
     <Compile Include="Models\PeliculasContext.cs" />
+    <Compile Include="Models\RestriccionPorAno.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

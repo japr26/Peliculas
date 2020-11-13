@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PagedList;
+using Peliculas.Models;
+using System;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 using System.Web;
 using System.Web.Mvc;
-using Peliculas.Models;
-using PagedList;
-using PagedList.Mvc;
 
 namespace Peliculas.Controllers
 {
@@ -26,17 +22,16 @@ namespace Peliculas.Controllers
 
            // ViewBag.Peliculas = ctx.Peliculas.ToList();
             ViewBag.Categorias = ctx.Categoria.ToList();
-            ViewBag.paged = ctx.Peliculas.ToList().ToPagedList(page ?? 1, 5);
+            ViewBag.paged = ctx.Peliculas.OrderByDescending(x => x.idPelicula).ToList().ToPagedList(page ?? 1, 5);
 
             return View(peliculas);
         }
 
         public ActionResult Editar(int idPelicula)
         {
-            ViewBag.Peliculas = ctx.Peliculas.ToList();
-            ViewBag.Categorias = ctx.Categoria.ToList();
-
             pelicula = ctx.Peliculas.Where(x => x.idPelicula == idPelicula).SingleOrDefault();
+
+            ViewBag.Categorias = ctx.Categoria.ToList();
 
             return View(pelicula);
         }
@@ -51,38 +46,106 @@ namespace Peliculas.Controllers
 
         public ActionResult Guardar(Peliculas.Models.Peliculas model, HttpPostedFileBase rutaImagen)
         {
+            ViewBag.Categorias = ctx.Categoria.ToList();
+
+            if (model.rutaImagen == null && rutaImagen == null){
+                ModelState.AddModelError("rutaImagen", "Debe cargar la imagen");
+                return View("Editar", model);
+            }
 
             if (ModelState.IsValid)
             {
-                string path = Server.MapPath("~/imagenes");
-                string fileName = Path.GetFileName(rutaImagen.FileName);
+                var anos = ctx.RestriccionPorAno.Where(x => x.idCategoria == model.idCategoria).ToList();
 
-                string fullPath = Path.Combine(path, fileName);
-                rutaImagen.SaveAs(fullPath);
-                if (fileName != null)
+                var result = (from a in anos where a.ano == model.ano select a.ano).Count();
+
+                string path;
+                string fileName;
+                string fullPath;
+                var ano = model.ano;
+
+                if (ano < 1920)
                 {
-                    model.rutaImagen = fileName;
+                    ModelState.AddModelError("ano","Debe agregar un año mayor a 1920");
+
+                    if (model.rutaImagen == "System.Web.HttpPostedFileWrapper")
+                    {
+                        ModelState.AddModelError("rutaImagen", "Debe cargar la imagen");
+
+                        return View("Editar", model);
+                    }
+
+                    return View("Editar",model);
                 }
-
-                if (model.idPelicula > 0)
+                else if(ano > DateTime.Today.Year)
                 {
-                    ctx.Entry(model).State = EntityState.Modified;
-                    ctx.SaveChanges();
+                    ModelState.AddModelError("ano", "El año no puede ser mayor que el año actual");
 
-                    return Redirect("~/Peliculas/Index");
+                    if (model.rutaImagen == "System.Web.HttpPostedFileWrapper")
+                    {
+                        ModelState.AddModelError("rutaImagen", "Debe cargar la imagen");
+
+                        return View("Editar", model);
+                    }
+
+                    return View("Editar",model);
+                }
+                else if(result > 0)
+                {
+                    ModelState.AddModelError("ano", "En este año no es posible registrar la categoria seleccionada");
+
+                    if (model.rutaImagen == "System.Web.HttpPostedFileWrapper")
+                    {
+                        ModelState.AddModelError("rutaImagen", "Debe cargar la imagen");
+
+                        return View("Editar", model);
+                    }
+
+                    return View("Editar", model);
                 }
                 else
                 {
-                    ctx.Entry(model).State = EntityState.Added;
-                    ctx.SaveChanges();
 
-                    return Redirect("~/Peliculas/Index");
+                    if (rutaImagen != null)
+                    {
+                        path = Server.MapPath("~/imagenes");
+                        fileName = Path.GetFileName(rutaImagen.FileName);
+
+                        fullPath = Path.Combine(path, fileName);
+                        rutaImagen.SaveAs(fullPath);
+                        if (fileName != null)
+                        {
+                            model.rutaImagen = fileName;
+                        }
+
+                    }
+                    
+                    if (model.rutaImagen == "System.Web.HttpPostedFileWrapper")
+                    {
+                        ModelState.AddModelError("rutaImagen", "Debe cargar la imagen");
+
+                        return View("Editar", model);
+                    }
+                    else if (model.idPelicula > 0)
+                    {
+                        ctx.Entry(model).State = EntityState.Modified;
+                        ctx.SaveChanges();
+
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ctx.Entry(model).State = EntityState.Added;
+                        ctx.SaveChanges();
+
+                        return RedirectToAction("Index");
+                    }
                 }
 
             }
             else
             {
-                return Redirect("~/Peliculas/Index");
+                return RedirectToAction("Index");
             }
         }
 
@@ -94,7 +157,7 @@ namespace Peliculas.Controllers
             ctx.Entry(model).State = EntityState.Deleted;
             ctx.SaveChanges();
 
-            return Redirect("~/Peliculas/Index");
+            return RedirectToAction("Index");
         }
     }
 }

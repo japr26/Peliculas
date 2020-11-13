@@ -22,10 +22,14 @@ namespace Peliculas.Models
 
         public int idCategoria { get; set; }
 
-        [Required(ErrorMessage = "Campo necesario")]
+        //[Required(ErrorMessage = "Campo necesario")]
         [StringLength(250)]
         public string rutaImagen { get; set; }
 
         public virtual Categoria Categoria { get; set; }
+
+        [Required(ErrorMessage = "Campo necesario")]
+        [StringLength(30)]
+        public string Director { get; set; }
     }
 }

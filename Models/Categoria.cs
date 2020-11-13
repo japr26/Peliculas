@@ -13,6 +13,7 @@ namespace Peliculas.Models
         public Categoria()
         {
             Peliculas = new HashSet<Peliculas>();
+            RestriccionPorAno = new HashSet<RestriccionPorAno>();
         }
 
         public int id { get; set; }
@@ -22,5 +23,6 @@ namespace Peliculas.Models
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Peliculas> Peliculas { get; set; }
+        public virtual ICollection<RestriccionPorAno> RestriccionPorAno { get; set; }
     }
 }

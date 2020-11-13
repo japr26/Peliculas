@@ -17,13 +17,14 @@
                 <div class="modal-body">
                     @using (Html.BeginForm("Guardar", "Peliculas", FormMethod.Post, new { id = "frm-articulo", enctype = "multipart/form-data" }))
                     {
+                        @Html.HiddenFor(x => x.idPelicula)
                         <div class="panel panel-default">
                             <div class="panel-heading">Información de articulo</div>
                             <div class="panel-body">
                                 <div class="custom-file">
                                     @Html.Label("Imagen")
                                     @Html.TextBoxFor(x => x.rutaImagen, new { @class = "form-control", @id = "rutaImagen", @name = "rutaImagen", @type = "file" })
-                                    @Html.ValidationMessageFor(x => x.rutaImagen, "", new { @class = "text-danger" })
+                                    @*@Html.ValidationMessageFor(x => x.rutaImagen, "", new { @class = "text-danger" })*@
                                 </div>
                                 <div class="form-group">
                                     @Html.Label("Titulo")
@@ -36,8 +37,14 @@
                                 </div>
                                 <div class="form-group">
                                     @Html.Label("Año")
-                                    @Html.TextBoxFor(x => x.ano, new { @class = "form-control", @type = "number", @min = "1900", @max= "3000" })
+                                    @Html.TextBoxFor(x => x.ano, new { @class = "form-control", @type = "number", @min = "1900", @max = "3000" })
                                     @Html.ValidationMessageFor(x => x.ano, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Director")
+                                    @Html.TextBoxFor(x => x.Director, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.Director, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>
@@ -67,6 +74,7 @@
                     <th style="width:200px">Titulo</th>
                     <th style="width:200px">Categoria</th>
                     <th style="width:200px">Año</th>
+                    <th style="width:200px">Director</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +85,7 @@
                     <td>@(m.titulo)</td>
                     <td>@(m.Categoria.descripcion)</td>
                     <td>@(m.ano)</td>
+                    <td>@(m.Director)</td>
                     <td>
                         @*<a id="Editar" data-toggle="modal" class="btn btn-primary btn-lg" onclick="Editar('@(m.idPelicula)')">Editar</a>*@
                         @Html.ActionLink("Editar", "Editar", new { idPelicula = m.idPelicula }, new { @class = "btn btn-primary btn-xs" })
@@ -128,6 +137,6 @@
     //            success: function (response) { alert("hola"); },
     //            error: function (result) { alert(result.status + ' ' + result.statusText); }
     //        });
-    //        }
     //    }
+    // }
 </script>

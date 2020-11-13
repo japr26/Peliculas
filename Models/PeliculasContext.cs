@@ -14,6 +14,7 @@ namespace Peliculas.Models
 
         public virtual DbSet<Categoria> Categoria { get; set; }
         public virtual DbSet<Peliculas> Peliculas { get; set; }
+        public virtual DbSet<RestriccionPorAno> RestriccionPorAno { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -34,6 +35,12 @@ namespace Peliculas.Models
             modelBuilder.Entity<Peliculas>()
                 .Property(e => e.rutaImagen)
                 .IsUnicode(false);
+
+            modelBuilder.Entity<Categoria>()
+                .HasMany(e => e.RestriccionPorAno)
+                .WithRequired(e => e.Categoria)
+                .HasForeignKey(e => e.idCategoria)
+                .WillCascadeOnDelete(false);
         }
     }
 }

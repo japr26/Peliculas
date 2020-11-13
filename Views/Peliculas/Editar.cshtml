@@ -13,7 +13,9 @@
             <div class="panel-body">
                 <div class="custom-file">
                     @Html.Label("Imagen")
-                    @Html.TextBoxFor(x => x.rutaImagen, new { @class = "form-control", @id = "rutaImagen", @name = "rutaImagen", @type = "file" })
+                    @Html.HiddenFor(x => x.rutaImagen)
+                    @*@Html.TextBoxFor(x => x.rutaImagen, new { @class = "form-control", @id = "rutaImagen", @name = "rutaImagen", @type = "text" })*@
+                    <input class="form-control" type="file" id="rutaImagen" name="rutaImagen"/>
                     @Html.ValidationMessageFor(x => x.rutaImagen, "", new { @class = "text-danger" })
                 </div>
                 <div class="form-group">
@@ -29,6 +31,11 @@
                     @Html.Label("Año")
                     @Html.TextBoxFor(x => x.ano, new { @class = "form-control", @type = "number", @min = "1900", @max = "3000" })
                     @Html.ValidationMessageFor(x => x.ano, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.Label("Director")
+                    @Html.TextBoxFor(x => x.Director, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(x => x.Director, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
